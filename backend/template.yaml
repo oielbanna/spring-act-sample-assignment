@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Backend Lambda function for local development
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs22.x
+    Environment:
+      Variables:
+        NODE_ENV: development
+
+Resources:
+  BackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.handler
+      Events:
+        HealthCheck:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+        ResourcesApi:
+          Type: Api
+          Properties:
+            Path: /api/resources
+            Method: get
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+        RootPath:
+          Type: Api
+          Properties:
+            Path: /
+            Method: any
+
+Outputs:
+  BackendApi:
+    Description: "API Gateway endpoint URL for Backend function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  BackendFunction:
+    Description: "Backend Lambda Function ARN"
+    Value: !GetAtt BackendFunction.Arn
+  BackendFunctionIamRole:
+    Description: "Implicit IAM Role created for Backend function"
+    Value: !GetAtt BackendFunctionRole.Arn

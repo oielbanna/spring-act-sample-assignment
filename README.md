@@ -54,12 +54,28 @@ npm run install:all
 
 ### Running the Application
 
-#### Frontend Development:
+#### Local Development (Full Stack):
 ```bash
 npm start
 ```
-- Frontend will run on http://localhost:3000
-- Note: Backend is deployed as Lambda function, not run locally
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000 (using AWS SAM)
+
+#### Individual Services:
+```bash
+# Frontend only
+npm run client
+
+# Backend only (with SAM)
+npm run server:local
+
+# Development mode with warm containers
+npm run dev
+```
+
+#### Prerequisites for Local Backend:
+- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) installed
+- Docker Desktop running (required by SAM)
 
 #### Build Commands:
 ```bash
@@ -75,14 +91,26 @@ npm run build:all
 
 ### Testing the API
 
-The backend API is deployed as AWS Lambda functions. After deployment, you can test the endpoints using the provided API URL:
+#### Local Development:
+When running locally with SAM, test the endpoints at http://localhost:5000:
+
+```bash
+# Health check
+curl http://localhost:5000/health
+
+# Resources endpoint
+curl "http://localhost:5000/api/resources?location=NYC&category=domestic-violence"
+```
+
+#### Production/Staging:
+After deployment, test using the provided API URL:
 
 ```bash
 # Health check (replace with your actual API URL)
 curl https://your-api-url/health
 
 # Resources endpoint
-curl "https://your-api-url/api/resources?location=NYC&category=restaurants"
+curl "https://your-api-url/api/resources?location=NYC&category=domestic-violence"
 ```
 
 ## AWS Deployment

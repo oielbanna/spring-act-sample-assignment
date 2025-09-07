@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start:local": "npm run build && sam local start-api --port 5000",
+    "dev": "npm run build && sam local start-api --port 5000 --warm-containers EAGER"
   },
   "dependencies": {
     "aws-lambda": "^1.0.7"
