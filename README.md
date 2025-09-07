@@ -1,157 +1,160 @@
-# Full-Stack Application
+# Full-Stack Resource Finder Application
 
-A full-stack application with Node.js/Express (TypeScript) backend and React (TypeScript) frontend.
+A modern serverless full-stack application for finding community resources. Built with **React** frontend and **AWS Lambda** backend, designed for scalability and ease of deployment.
 
-## Project Structure
+## ✨ Highlights
+
+- 🚀 **Serverless Architecture**: AWS Lambda + API Gateway backend
+- ⚛️ **Modern React Frontend**: TypeScript, sleek UI with glassmorphism design
+- 🏗️ **Infrastructure as Code**: AWS CDK for reproducible deployments
+- 🧪 **Comprehensive Testing**: Vitest for backend, Jest for frontend
+- 🔄 **CI/CD Ready**: GitHub Actions workflow with environment management
+- 🛠️ **Local Development**: AWS SAM for local Lambda execution
+- 📱 **Responsive Design**: Works on desktop and mobile
+- 🌐 **Global CDN**: CloudFront distribution for fast worldwide access
+
+## 🎯 Features
+
+- **Resource Search**: Find community resources by location and category
+- **Multiple Categories**: Domestic violence, mental health, legal aid, housing support  
+- **Real-time Filtering**: Dynamic search with query parameters
+- **Health Monitoring**: Built-in health check endpoint
+- **Environment Management**: Separate staging and production deployments
+
+## 📁 Project Structure
 
 ```
-assignment/
-├── backend/          # Express.js TypeScript API server
-│   ├── src/          # TypeScript source files
-│   ├── dist/         # Compiled JavaScript (generated)
-│   └── tsconfig.json # TypeScript configuration
-├── frontend/         # React TypeScript app
-├── cdk/              # AWS Infrastructure as Code
-│   ├── cdk/          # CDK TypeScript app
-│   └── README.md     # Deployment documentation
-├── package.json      # Root package.json with scripts
-├── deploy.sh         # Automated deployment script
-└── README.md         # This file
+├── 🎨 frontend/              # React TypeScript application
+│   ├── src/                  # Source code with components, tests
+│   ├── build/               # Production build (generated)
+│   └── package.json         # Frontend dependencies
+├── ⚡ backend/               # AWS Lambda API
+│   ├── src/                 # TypeScript Lambda handlers
+│   ├── dist/               # Compiled JavaScript (generated)
+│   ├── template.yaml       # SAM template for local development
+│   └── package.json        # Backend dependencies
+├── 🏗️ cdk/                  # AWS Infrastructure as Code
+│   └── cdk/                # CDK TypeScript application
+├── 🔄 .github/              # CI/CD workflows
+│   └── workflows/          # GitHub Actions
+├── 📜 deploy.sh             # One-click deployment script
+└── 📋 package.json          # Root workspace configuration
 ```
 
-## API Endpoints
+## 🔌 API Endpoints
 
-- **GET /health** - Health check endpoint
-- **GET /api/resources?location={city}&category={type}** - Resources endpoint (functionality to be implemented)
+- **GET /health** - Service health check with timestamp
+- **GET /api/resources** - Search community resources
+  - Query params: `location` (city), `category` (resource type)
 
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- npm
+- **Node.js** 22+ 
+- **Docker Desktop** (for local backend)
+- **AWS SAM CLI** ([install guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html))
 
-### Installation
+### ⚡ One-Command Setup
 
-1. Install root dependencies:
 ```bash
-npm install
+# Clone and setup everything
+git clone <repository-url>
+cd assignment
+npm run install:all  # Installs all dependencies
+npm start            # Starts both frontend and backend
 ```
 
-2. Install backend dependencies:
-```bash
-npm run install:server
-```
-
-3. Install frontend dependencies:
-```bash
-npm run install:client
-```
-
-Or install all dependencies at once:
-```bash
-npm run install:all
-```
-
-### Running the Application
-
-#### Local Development (Full Stack):
-```bash
-npm start
-```
+**That's it!** 🎉 
 - Frontend: http://localhost:3000
-- Backend: http://localhost:5000 (using AWS SAM)
+- Backend API: http://localhost:5000
 
-#### Individual Services:
+### 📦 Manual Installation
+
 ```bash
-# Frontend only
-npm run client
+# Install dependencies for all services
+npm run install:all
 
-# Backend only (with SAM)
-npm run server:local
-
-# Development mode with warm containers
-npm run dev
+# Or install individually:
+npm run install:client  # Frontend only
+npm run install:server  # Backend only  
+npm run install:cdk     # Infrastructure only
 ```
 
-#### Prerequisites for Local Backend:
-- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) installed
-- Docker Desktop running (required by SAM)
+## 🛠️ Development Commands
 
-#### Build Commands:
+### 🏃‍♂️ Running Locally
+
 ```bash
-# Build backend Lambda function
-npm run build:backend
-
-# Build frontend React app
-npm run build:frontend
-
-# Build both
-npm run build:all
+npm start              # 🚀 Full-stack (frontend + backend)
+npm run dev            # 🔥 Development mode (with hot reload)
+npm run client         # 🎨 Frontend only
+npm run server:local   # ⚡ Backend only
 ```
 
-### Testing the API
-
-#### Local Development:
-When running locally with SAM, test the endpoints at http://localhost:5000:
+### 🔨 Building
 
 ```bash
-# Health check
+npm run build:all      # 📦 Build everything
+npm run build:frontend # 🎨 Build React app  
+npm run build:backend  # ⚡ Build Lambda function
+```
+
+### 🧪 Testing
+
+```bash
+cd backend && npm test        # 🧪 Backend tests (Vitest)
+cd frontend && npm test       # 🧪 Frontend tests (Jest)
+```
+
+### 🔍 Testing the API
+
+```bash
+# Local development (http://localhost:5000)
 curl http://localhost:5000/health
-
-# Resources endpoint
 curl "http://localhost:5000/api/resources?location=NYC&category=domestic-violence"
-```
 
-#### Production/Staging:
-After deployment, test using the provided API URL:
-
-```bash
-# Health check (replace with your actual API URL)
-curl https://your-api-url/health
-
-# Resources endpoint
+# Production (after deployment)
+curl https://your-api-url/health  
 curl "https://your-api-url/api/resources?location=NYC&category=domestic-violence"
 ```
 
-## AWS Deployment
+## 🚀 AWS Deployment
 
-This application can be deployed to AWS using CDK (Cloud Development Kit).
+### 🎯 One-Click Deployment
 
-### Quick Deployment
+```bash
+./deploy.sh staging     # 🧪 Deploy to staging
+./deploy.sh production  # 🌐 Deploy to production
+```
 
-1. **Prerequisites**: AWS CLI configured, Node.js installed
-2. **Deploy to staging**:
-   ```bash
-   ./deploy.sh staging
-   # or
-   npm run deploy:staging
-   ```
-3. **Deploy to production**:
-   ```bash
-   ./deploy.sh production
-   # or
-   npm run deploy:production
-   ```
+### 🏗️ Architecture
 
-### Architecture
+**Frontend**: S3 + CloudFront (global CDN)  
+**Backend**: Lambda + API Gateway (serverless)  
+**Infrastructure**: AWS CDK (TypeScript)
 
-- **Frontend**: S3 + CloudFront (static website hosting with global CDN)
-- **Backend**: Lambda + API Gateway (serverless API)
+### ⚙️ CI/CD with GitHub Actions
 
-### CI/CD Deployment
+1. **Add AWS secrets** to your GitHub repository
+2. **Go to Actions** → **Deploy Full-Stack Application** 
+3. **Run workflow** → Choose environment (staging/production)
 
-Automated deployment via GitHub Actions:
+## 📚 Documentation
 
-1. **Setup**: Add AWS credentials to GitHub secrets (see [.github/README.md](.github/README.md))
-2. **Deploy**: Go to **Actions** → **Deploy Full-Stack Application** → **Run workflow**
-3. **Choose environment**: Select staging or production
+| Component | Link | Description |
+|-----------|------|-------------|
+| 🏗️ **Infrastructure** | [cdk/README.md](cdk/README.md) | AWS CDK setup, architecture, costs |
+| 🔄 **CI/CD** | [.github/README.md](.github/README.md) | GitHub Actions, secrets setup |
+| ⚡ **Backend** | [backend/README.md](backend/README.md) | Lambda development, SAM setup |
 
-### Detailed Instructions
+## 🤝 Contributing
 
-See [cdk/README.md](cdk/README.md) for comprehensive deployment documentation including:
-- AWS architecture overview
-- Cost considerations  
-- Troubleshooting guide
-- Advanced configuration options
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-See [.github/README.md](.github/README.md) for CI/CD setup instructions.
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
