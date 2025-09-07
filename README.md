@@ -54,45 +54,35 @@ npm run install:all
 
 ### Running the Application
 
-#### Start both frontend and backend simultaneously:
+#### Frontend Development:
 ```bash
 npm start
 ```
-- Backend will run on http://localhost:5000
 - Frontend will run on http://localhost:3000
+- Note: Backend is deployed as Lambda function, not run locally
 
-#### Start services individually:
-
-**Backend only:**
+#### Build Commands:
 ```bash
-npm run server
-```
+# Build backend Lambda function
+npm run build:backend
 
-**Frontend only:**
-```bash
-npm run client
-```
+# Build frontend React app
+npm run build:frontend
 
-**Backend in development mode (with nodemon and TypeScript):**
-```bash
-npm run server:dev
-```
-
-**Build backend TypeScript:**
-```bash
-cd backend && npm run build
+# Build both
+npm run build:all
 ```
 
 ### Testing the API
 
-Once the backend is running, you can test the endpoints:
+The backend API is deployed as AWS Lambda functions. After deployment, you can test the endpoints using the provided API URL:
 
 ```bash
-# Health check
-curl http://localhost:5000/health
+# Health check (replace with your actual API URL)
+curl https://your-api-url/health
 
 # Resources endpoint
-curl "http://localhost:5000/api/resources?location=NYC&category=restaurants"
+curl "https://your-api-url/api/resources?location=NYC&category=restaurants"
 ```
 
 ## AWS Deployment
@@ -105,10 +95,14 @@ This application can be deployed to AWS using CDK (Cloud Development Kit).
 2. **Deploy to staging**:
    ```bash
    ./deploy.sh staging
+   # or
+   npm run deploy:staging
    ```
 3. **Deploy to production**:
    ```bash
    ./deploy.sh production
+   # or
+   npm run deploy:production
    ```
 
 ### Architecture

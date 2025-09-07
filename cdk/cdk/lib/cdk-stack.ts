@@ -24,7 +24,7 @@ export class FullStackAppStack extends cdk.Stack {
       websiteIndexDocument: 'index.html',
       websiteErrorDocument: 'error.html',
       publicReadAccess: true,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS_ONLY,
       removalPolicy: deploymentEnvironment === 'production' ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: deploymentEnvironment !== 'production',
     });
@@ -52,9 +52,9 @@ export class FullStackAppStack extends cdk.Stack {
 
     // Lambda Function for Backend API
     const backendLambda = new lambda.Function(this, `BackendLambda-${deploymentEnvironment}`, {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'server.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/dist')),
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/src/handler.ts')),
       environment: {
         NODE_ENV: deploymentEnvironment,
       },
@@ -76,11 +76,14 @@ export class FullStackAppStack extends cdk.Stack {
 
     const lambdaIntegration = new apigateway.LambdaIntegration(backendLambda);
     
-    // Add API Gateway routes
-    api.root.addResource('health').addMethod('GET', lambdaIntegration);
-    api.root.addResource('api')
-      .addResource('resources')
-      .addMethod('GET', lambdaIntegration);
+    // Add API Gateway routes - use proxy integration to handle all routes in Lambda
+    const proxyResource = api.root.addProxy({
+      defaultIntegration: lambdaIntegration,
+      anyMethod: true, // TODO define specific routes
+    });
+    
+    // Also handle root level requests
+    api.root.addMethod('ANY', lambdaIntegration);
 
     // Deploy Frontend to S3
     new s3deploy.BucketDeployment(this, `WebsiteDeployment-${deploymentEnvironment}`, {

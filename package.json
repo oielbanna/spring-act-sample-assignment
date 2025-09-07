@@ -1,15 +1,19 @@
 {
   "name": "fullstack-app",
   "version": "1.0.0",
-  "description": "Full-stack application with Node.js/Express backend and React frontend",
+  "description": "Full-stack application with Lambda backend and React frontend",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd backend && npm start",
+    "start": "npm run client",
     "client": "cd frontend && npm start",
-    "server:dev": "cd backend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:backend && npm run build:frontend",
     "install:server": "cd backend && npm install",
     "install:client": "cd frontend && npm install",
-    "install:all": "npm run install:server && npm run install:client"
+    "install:cdk": "cd cdk/cdk && npm install",
+    "install:all": "npm run install:server && npm run install:client && npm run install:cdk",
+    "deploy:staging": "./deploy.sh staging",
+    "deploy:production": "./deploy.sh production"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
