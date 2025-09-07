@@ -11,7 +11,11 @@ assignment/
 │   ├── dist/         # Compiled JavaScript (generated)
 │   └── tsconfig.json # TypeScript configuration
 ├── frontend/         # React TypeScript app
+├── cdk/              # AWS Infrastructure as Code
+│   ├── cdk/          # CDK TypeScript app
+│   └── README.md     # Deployment documentation
 ├── package.json      # Root package.json with scripts
+├── deploy.sh         # Automated deployment script
 └── README.md         # This file
 ```
 
@@ -90,3 +94,32 @@ curl http://localhost:5000/health
 # Resources endpoint
 curl "http://localhost:5000/api/resources?location=NYC&category=restaurants"
 ```
+
+## AWS Deployment
+
+This application can be deployed to AWS using CDK (Cloud Development Kit).
+
+### Quick Deployment
+
+1. **Prerequisites**: AWS CLI configured, Node.js installed
+2. **Deploy to staging**:
+   ```bash
+   ./deploy.sh staging
+   ```
+3. **Deploy to production**:
+   ```bash
+   ./deploy.sh production
+   ```
+
+### Architecture
+
+- **Frontend**: S3 + CloudFront (static website hosting with global CDN)
+- **Backend**: Lambda + API Gateway (serverless API)
+
+### Detailed Instructions
+
+See [cdk/README.md](cdk/README.md) for comprehensive deployment documentation including:
+- AWS architecture overview
+- Cost considerations  
+- Troubleshooting guide
+- Advanced configuration options

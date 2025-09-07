@@ -154,7 +154,7 @@ function App() {
                 ))}
               </div>
             ) : (
-              <></>
+              <p>No resources found for your search.</p>
             )}
           </>
         )}
