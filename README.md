@@ -110,6 +110,14 @@ This application can be deployed to AWS using CDK (Cloud Development Kit).
 - **Frontend**: S3 + CloudFront (static website hosting with global CDN)
 - **Backend**: Lambda + API Gateway (serverless API)
 
+### CI/CD Deployment
+
+Automated deployment via GitHub Actions:
+
+1. **Setup**: Add AWS credentials to GitHub secrets (see [.github/README.md](.github/README.md))
+2. **Deploy**: Go to **Actions** → **Deploy Full-Stack Application** → **Run workflow**
+3. **Choose environment**: Select staging or production
+
 ### Detailed Instructions
 
 See [cdk/README.md](cdk/README.md) for comprehensive deployment documentation including:
@@ -117,3 +125,5 @@ See [cdk/README.md](cdk/README.md) for comprehensive deployment documentation in
 - Cost considerations  
 - Troubleshooting guide
 - Advanced configuration options
+
+See [.github/README.md](.github/README.md) for CI/CD setup instructions.

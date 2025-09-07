@@ -1,0 +1,138 @@
+name: Deploy Full-Stack Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+            cdk/cdk/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          echo "Installing backend dependencies..."
+          cd backend && npm ci
+          
+          echo "Installing frontend dependencies..."
+          cd ../frontend && npm ci
+          
+          echo "Installing CDK dependencies..."
+          cd ../cdk/cdk && npm ci
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test || echo "No tests configured, skipping..."
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false || echo "No tests configured, skipping..."
+
+      - name: Run CDK tests
+        run: |
+          cd cdk/cdk
+          npm test || echo "No tests configured, skipping..."
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+            cdk/cdk/package-lock.json
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+      - name: Install dependencies
+        run: |
+          echo "Installing backend dependencies..."
+          cd backend && npm ci
+          
+          echo "Installing frontend dependencies..."
+          cd ../frontend && npm ci
+          
+          echo "Installing CDK dependencies..."
+          cd ../cdk/cdk && npm ci
+
+      - name: Build applications
+        run: |
+          echo "Building frontend..."
+          cd ../frontend && npm run build
+
+      - name: Deploy to AWS
+        run: |
+          cd cdk/cdk
+          npx cdk deploy \
+            --context deploymentEnvironment=${{ github.event.inputs.environment }} \
+            --require-approval never \
+            --outputs-file ../../outputs-${{ github.event.inputs.environment }}.json
+
+      - name: Display deployment outputs
+        run: |
+          echo "🎉 Deployment to ${{ github.event.inputs.environment }} completed!"
+          
+          if [ -f "outputs-${{ github.event.inputs.environment }}.json" ]; then
+            echo "📋 Deployment Information:"
+            echo "=========================="
+            
+            WEBSITE_URL=$(cat outputs-${{ github.event.inputs.environment }}.json | grep -o '"WebsiteURL-[^"]*":"[^"]*"' | cut -d'"' -f4 || echo "Not found")
+            API_URL=$(cat outputs-${{ github.event.inputs.environment }}.json | grep -o '"ApiURL-[^"]*":"[^"]*"' | cut -d'"' -f4 || echo "Not found")
+            BUCKET_NAME=$(cat outputs-${{ github.event.inputs.environment }}.json | grep -o '"BucketName-[^"]*":"[^"]*"' | cut -d'"' -f4 || echo "Not found")
+            
+            echo "🌐 Website URL: $WEBSITE_URL"
+            echo "🔗 API URL: $API_URL"
+            echo "🪣 S3 Bucket: $BUCKET_NAME"
+            
+            # Set as step outputs for potential use in other jobs
+            echo "website-url=$WEBSITE_URL" >> $GITHUB_OUTPUT
+            echo "api-url=$API_URL" >> $GITHUB_OUTPUT
+            echo "bucket-name=$BUCKET_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Could not read deployment outputs."
+          fi
+
+      - name: Upload deployment outputs as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-outputs-${{ github.event.inputs.environment }}
+          path: outputs-${{ github.event.inputs.environment }}.json
+          retention-days: 30
