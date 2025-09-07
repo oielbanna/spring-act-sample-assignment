@@ -158,3 +158,7 @@ curl "https://your-api-url/api/resources?location=NYC&category=domestic-violence
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+## AI Usage
+
+Most of the code was generated using Claude Code. I started with the backend server then moved on to the frontend then finished with the cdk infrastructure. LLMs are very bad at making decisions so I had to guide Claude with which technologies to use and how to setup the infrastructure correctly as well as local development enviornment. A lot of this code is not production ready but its a good POC to address the requirements of the assignment. 
